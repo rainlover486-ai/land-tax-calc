@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>토지 양도소득세 계산기 (참고용) — 강부꿀</title>
+<style>
+  :root{
+    --navy:#1e293b;
+    --navy-soft:#334155;
+    --amber:#d97706;
+    --amber-light:#fef3c7;
+    --amber-soft:#fde6a8;
+    --cream:#fffbf0;
+    --gray:#64748b;
+    --line:#e2d9c2;
+    --green:#15803d;
+    --red:#b91c1c;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Noto Sans KR","Apple SD Gothic Neo",sans-serif;
+    background:var(--cream);
+    color:var(--navy);
+    padding:24px 16px 60px;
+  }
+  .wrap{max-width:640px;margin:0 auto;}
+  .brand{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:18px;
+  }
+  .brand .logo{
+    font-weight:900;color:var(--amber);font-size:20px;letter-spacing:-0.5px;
+  }
+  .brand .tag{
+    font-size:13px;color:var(--gray);
+  }
+  h1{
+    font-size:24px;line-height:1.35;margin:0 0 6px;
+    background:var(--navy);color:#fff;
+    padding:22px 20px;border-radius:16px 16px 0 0;
+  }
+  h1 span{color:var(--amber);}
+  .sub{
+    background:var(--navy);color:#cbd5e1;font-size:14px;
+    padding:0 20px 20px;border-radius:0 0 16px 16px;margin-bottom:20px;
+  }
+  .card{
+    background:#fff;border:1px solid var(--line);border-radius:16px;
+    padding:20px;margin-bottom:16px;
+  }
+  .field{margin-bottom:16px;}
+  .field:last-child{margin-bottom:0;}
+  label{
+    display:block;font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px;
+  }
+  .hint{font-size:12px;color:var(--gray);margin-top:4px;}
+  input[type=number]{
+    width:100%;padding:12px 14px;font-size:16px;
+    border:1.5px solid var(--line);border-radius:10px;
+    background:#fffef9;color:var(--navy);
+  }
+  input[type=number]:focus{outline:none;border-color:var(--amber);}
+  .unit-row{display:flex;align-items:center;gap:8px;}
+  .unit-row input{flex:1;}
+  .unit-row .unit{font-size:14px;color:var(--gray);white-space:nowrap;}
+  .toggle{
+    display:flex;border:1.5px solid var(--line);border-radius:10px;overflow:hidden;
+  }
+  .toggle button{
+    flex:1;padding:12px 10px;font-size:15px;font-weight:700;
+    border:none;background:#fffef9;color:var(--gray);cursor:pointer;
+  }
+  .toggle button.active.business{background:var(--green);color:#fff;}
+  .toggle button.active.nonbusiness{background:var(--red);color:#fff;}
+  .result-title{
+    font-size:15px;font-weight:900;color:var(--amber);margin-bottom:14px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .row{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px;
+  }
+  .row:last-of-type{border-bottom:none;}
+  .row .k{color:var(--gray);}
+  .row .v{font-weight:700;color:var(--navy);}
+  .total-box{
+    margin-top:14px;background:var(--navy);border-radius:14px;
+    padding:18px 20px;display:flex;justify-content:space-between;align-items:center;
+  }
+  .total-box .k{color:var(--amber);font-size:14px;font-weight:700;}
+  .total-box .v{color:#fff;font-size:26px;font-weight:900;}
+  .badge{
+    display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;
+    border-radius:999px;margin-left:8px;
+  }
+  .badge.business{background:var(--amber-light);color:var(--green);}
+  .badge.nonbusiness{background:var(--amber-light);color:var(--red);}
+  .note{
+    font-size:12.5px;color:var(--gray);line-height:1.6;
+    background:var(--amber-light);border-radius:12px;padding:14px 16px;margin-top:18px;
+  }
+  .footer-tag{
+    text-align:center;font-size:12px;color:var(--gray);margin-top:22px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <div class="logo">강부꿀</div>
+    <div class="tag">서울·경기 토지 세금 참고자료</div>
+  </div>
+
+  <h1>토지 양도소득세 계산기 <span>(참고용)</span></h1>
+  <div class="sub">숫자만 넣으면 사업용·비사업용 세금 차이를 바로 비교해 드려요.</div>
+
+  <div class="card">
+    <div class="field">
+      <label>취득가액</label>
+      <div class="unit-row">
+        <input type="number" id="buy" value="30000" min="0">
+        <span class="unit">만원</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>양도가액</label>
+      <div class="unit-row">
+        <input type="number" id="sell" value="60000" min="0">
+        <span class="unit">만원</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>필요경비 (중개수수료·취득세 등)</label>
+      <div class="unit-row">
+        <input type="number" id="cost" value="0" min="0">
+        <span class="unit">만원</span>
+      </div>
+      <div class="hint">모르면 0으로 두셔도 대략적인 계산은 가능해요.</div>
+    </div>
+    <div class="field">
+      <label>보유기간</label>
+      <div class="unit-row">
+        <input type="number" id="years" value="8" min="0" max="60">
+        <span class="unit">년</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>토지 구분</label>
+      <div class="toggle">
+        <button id="btnBiz" class="active business" onclick="setType('biz')">사업용</button>
+        <button id="btnNonBiz" class="nonbusiness" onclick="setType('nonbiz')">비사업용</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="result-title">
+      계산 결과
+      <span id="typeBadge" class="badge business">사업용 기준</span>
+    </div>
+    <div class="row"><span class="k">양도차익</span><span class="v" id="rGain">-</span></div>
+    <div class="row"><span class="k">장기보유특별공제율</span><span class="v" id="rDeductRate">-</span></div>
+    <div class="row"><span class="k">장기보유특별공제액</span><span class="v" id="rDeductAmt">-</span></div>
+    <div class="row"><span class="k">양도소득금액</span><span class="v" id="rIncome">-</span></div>
+    <div class="row"><span class="k">과세표준 (기본공제 250만원 차감)</span><span class="v" id="rBase">-</span></div>
+    <div class="row"><span class="k">적용 세율</span><span class="v" id="rRate">-</span></div>
+    <div class="row"><span class="k">산출세액</span><span class="v" id="rTax">-</span></div>
+    <div class="row"><span class="k">지방소득세 (10%)</span><span class="v" id="rLocal">-</span></div>
+
+    <div class="total-box">
+      <span class="k">총 납부세액</span>
+      <span class="v" id="rTotal">-</span>
+    </div>
+  </div>
+
+  <div class="note">
+    ⚠️ 이 계산기는 대략적인 감을 잡기 위한 참고용이에요. 상속·증여받은 토지, 감면 특례, 다자녀·1세대 관련 특수 조건 등은 반영되지 않았어요. 실제 신고 전에는 <strong>국세청 홈택스</strong> 모의계산이나 <strong>세무사 상담</strong>을 통해 정확한 금액을 꼭 확인해 주세요.
+  </div>
+
+  <div class="footer-tag">강부꿀 · 서울·경기 토지 정보</div>
+</div>
+
+<script>
+let currentType = 'biz';
+
+function setType(t){
+  currentType = t;
+  document.getElementById('btnBiz').classList.toggle('active', t==='biz');
+  document.getElementById('btnNonBiz').classList.toggle('active', t==='nonbiz');
+  const badge = document.getElementById('typeBadge');
+  badge.textContent = t==='biz' ? '사업용 기준' : '비사업용 기준';
+  badge.className = 'badge ' + (t==='biz' ? 'business' : 'nonbusiness');
+  calc();
+}
+
+function won(manwon){
+  // manwon(만원) -> display string in 원 with 만/억 breakdown
+  const v = Math.round(manwon);
+  return v.toLocaleString('ko-KR') + '만원';
+}
+
+function longTermDeductRate(years){
+  if (years < 3) return 0;
+  if (years >= 15) return 30;
+  return 6 + (years - 3) * 2;
+}
+
+// bracket thresholds in 만원, rate, deduction(만원) — 2026 기준 기본세율표
+const BRACKETS = [
+  {limit: 1400, rate: 6,  ded: 0},
+  {limit: 5000, rate: 15, ded: 126},
+  {limit: 8800, rate: 24, ded: 576},
+  {limit: 15000,rate: 35, ded: 1544},
+  {limit: 30000,rate: 38, ded: 1994},
+  {limit: 50000,rate: 40, ded: 2594},
+  {limit: 100000,rate:42, ded: 3594},
+  {limit: Infinity, rate: 45, ded: 6594}
+];
+
+function bracketFor(base, addPct){
+  for (const b of BRACKETS){
+    if (base <= b.limit){
+      return {rate: b.rate + addPct, ded: b.ded};
+    }
+  }
+}
+
+function calc(){
+  const buy = parseFloat(document.getElementById('buy').value) || 0;
+  const sell = parseFloat(document.getElementById('sell').value) || 0;
+  const cost = parseFloat(document.getElementById('cost').value) || 0;
+  const years = parseFloat(document.getElementById('years').value) || 0;
+
+  const gain = Math.max(sell - buy - cost, 0);
+  const deductRate = longTermDeductRate(years);
+  const deductAmt = gain * deductRate / 100;
+  const income = Math.max(gain - deductAmt, 0);
+  const base = Math.max(income - 250, 0); // 기본공제 250만원
+
+  const addPct = currentType === 'nonbiz' ? 10 : 0;
+  const {rate, ded} = bracketFor(base, addPct);
+  const tax = Math.max(base * rate / 100 - ded, 0);
+  const local = tax * 0.1;
+  const total = tax + local;
+
+  document.getElementById('rGain').textContent = won(gain);
+  document.getElementById('rDeductRate').textContent = deductRate + '%';
+  document.getElementById('rDeductAmt').textContent = won(deductAmt);
+  document.getElementById('rIncome').textContent = won(income);
+  document.getElementById('rBase').textContent = won(base);
+  document.getElementById('rRate').textContent = rate + '%' + (addPct ? ' (기본세율+10%p)' : '');
+  document.getElementById('rTax').textContent = won(tax);
+  document.getElementById('rLocal').textContent = won(local);
+  document.getElementById('rTotal').textContent = won(total);
+}
+
+['buy','sell','cost','years'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', calc);
+});
+
+calc();
+</script>
+</body>
+</html>
